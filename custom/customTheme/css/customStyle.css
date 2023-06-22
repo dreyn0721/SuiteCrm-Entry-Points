@@ -1,0 +1,24 @@
+
+.custom-ringba-act-container .ringba-act-btn{
+    padding: 10px 15px;
+    border-radius: 5px;
+    color: #fff;
+    margin-right: 5px;
+
+    line-height: 16px;
+    height: 40px;
+    display: inline-block;
+}
+
+.custom-ringba-act-container .ringba-act-btn.onpaused{
+    background: #FF0000;
+}
+
+.custom-ringba-act-container .ringba-act-btn.unpaused{
+    background: #28A645;
+}
+
+.custom-ringba-act-container .time-status{
+    color: #fff;
+    padding: 5px 10px;
+}
