@@ -45,21 +45,21 @@ while ($the_insured = $insured->db->fetchByAssoc($result_insured)) {
 //Get relationship of CSCases - Insured
 
 $related_insured_id_by_cscase_id = [];
-$query_cscase_insured_relationship = "SELECT * FROM `med01_insured_med01_policy_1_c` where deleted != '1' ";
+$query_cscase_insured_relationship = "SELECT * FROM `med01_insured_med01_cscases_c` ";
 $relationship_insured_cscase = $insured->db->query($query_cscase_insured_relationship);
 
 while ($the_relationship_insured_cscase = $insured->db->fetchByAssoc($relationship_insured_cscase)) {
-    $related_insured_id_by_cscase_id[ $the_relationship_insured_cscase['med01_insured_med01_policy_1med01_policy_idb'] ] = $the_relationship_insured_cscase['med01_insured_med01_policy_1med01_insured_ida'];
+    $related_insured_id_by_cscase_id[ $the_relationship_insured_cscase['med01_insured_med01_cscasesmed01_cscases_idb'] ] = $the_relationship_insured_cscase['med01_insured_med01_cscasesmed01_insured_ida'];
 }
 
 
 
-$query_cscase_insured_relationship2 = "SELECT * FROM `med01_insured_med01_policy_c` where deleted != '1' ";
-$relationship_insured_cscase2 = $insured->db->query($query_cscase_insured_relationship2);
+// $query_cscase_insured_relationship2 = "SELECT * FROM `med01_insured_med01_cscases_1_c` where deleted != '1' ";
+// $relationship_insured_cscase2 = $insured->db->query($query_cscase_insured_relationship2);
 
-while ($the_relationship_insured_cscase2 = $insured->db->fetchByAssoc($relationship_insured_cscase2)) {
-    $related_insured_id_by_cscase_id[ $the_relationship_insured_cscase2['med01_insured_med01_policymed01_policy_idb'] ] = $the_relationship_insured_cscase2['med01_insured_med01_policymed01_insured_ida'];
-}
+// while ($the_relationship_insured_cscase2 = $insured->db->fetchByAssoc($relationship_insured_cscase2)) {
+//     $related_insured_id_by_cscase_id[ $the_relationship_insured_cscase2['med01_cscases_med01_insuredmed01_cscases_idb'] ] = $the_relationship_insured_cscase2['med01_cscases_med01_insuredmed01_insured_ida'];
+// }
 
 
 
@@ -71,7 +71,7 @@ while ($the_relationship_insured_cscase2 = $insured->db->fetchByAssoc($relations
 
 // Get all the list, no limit, we only limit the number of to updates
 //$query = "SELECT id FROM {$policy->table_name} WHERE DATE_MODIFIED >= DATE_SUB(NOW(), INTERVAL 1 DAY) OR DATE_ENTERED >= DATE_SUB(NOW(), INTERVAL 1 DAY)";
-$query = "SELECT id, name FROM {$cscase->table_name}  ";
+$query = "SELECT id, name FROM {$cscase->table_name} ORDER BY id DESC ";
 $result = $cscase->db->query($query);
 
 
@@ -88,13 +88,14 @@ $update_data = []; //zxc
 
 while ($row = $cscase->db->fetchByAssoc($result)) {
 
+
     if( isset( $related_insured_id_by_cscase_id[ $row['id'] ] ) && $related_insured_id_by_cscase_id[ $row['id'] ] && isset( $related_insured_by_id[ $related_insured_id_by_cscase_id[ $row['id'] ] ] ) && $related_insured_by_id[ $related_insured_id_by_cscase_id[ $row['id'] ] ] ){
 
         $related_insured_data = $related_insured_by_id[ $related_insured_id_by_cscase_id[ $row['id'] ] ];
-
+        // echo "existed\n";
     } else {
         $related_insured_data = false;
-
+        // echo "not existed\n";
 
         //insured is required to be accurate, so we will not update if it's missing
         continue;
@@ -122,7 +123,7 @@ while ($row = $cscase->db->fetchByAssoc($result)) {
     }
 }
 
-
+// exit();
 
 //mass update zxc
 if( isset( $has_update ) && $has_update && isset( $update_data ) && is_array( $update_data ) && count( $update_data ) > 0 ){

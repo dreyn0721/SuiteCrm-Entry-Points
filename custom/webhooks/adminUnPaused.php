@@ -130,6 +130,8 @@ if( isset( $_POST['id'] ) && $_POST['id'] ){
 
 
 if( isset( $id ) && $id ){
+                    echo "Update target - no response";
+                    exit();
     $query = "SELECT * FROM `users` where id = '$id' ";
     $the_users = $insured->db->query($query);
     $user_name = false;
