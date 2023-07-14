@@ -26,15 +26,16 @@ $policy = new Med01_Policy();
 
 $query = "SELECT carrier, COUNT( id ) as count FROM {$policy->table_name} 
 WHERE 
-commissionpaid = '1' 
+commissionpaid = 1 
 AND
-status != 'Declined Carrier' 
-AND
-status != 'DeclinedCarrier' 
-AND
-status != 'Not Issued Withdrawn' 
-AND
-status != 'Withdrawn' 
+(
+	status = 'DeclinedCarrier' 
+	OR
+	status = 'NotIssuedWithdrawn' 
+	OR
+	status = 'Withdrawn'
+)
+
 GROUP BY carrier ";
 
 $result_query = $policy->db->query($query);
