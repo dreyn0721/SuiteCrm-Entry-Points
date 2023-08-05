@@ -11,6 +11,7 @@ require_once('include/entryPoint.php');
 require_once('custom/formula_functions.php');
 require_once('modules/Med01_Policy/Med01_Policy.php');
 require_once('modules/Med01_Insured/Med01_Insured.php');
+require_once('modules/Med01_Commission/Med01_Commission.php');
 
 
 
@@ -19,6 +20,7 @@ require_once('modules/Med01_Insured/Med01_Insured.php');
 // Get the module object
 $policy = new Med01_Policy();
 $insured = new Med01_Insured();
+$commission = new Med01_Commission();
 
 $yesterday_date = date( "m/d/Y H:i", strtotime( date("Y-m-d H:i:s")." -1 day" ) );
 
@@ -66,10 +68,10 @@ while ($the_relationship_insured_policy2 = $insured->db->fetchByAssoc($relations
 
 
 
-$commission_count_by_id = [];
+$commissions_by_id = [];
 
-/*//collect all commissions at 1 query request, so we can grab later. this way we can save resource, instead of requesting query for each
-$query_commission = "SELECT id, name FROM {$commission->table_name} ";
+//collect all commissions at 1 query request, so we can grab later. this way we can save resource, instead of requesting query for each
+$query_commission = "SELECT id, name, policynumber, chargeback FROM {$commission->table_name} where deleted != '1' ";
 $result_commission = $commission->db->query($query_commission);
 
 $related_commission_by_id = [];
@@ -77,34 +79,31 @@ $related_commission_by_id = [];
 while ($the_commission = $commission->db->fetchByAssoc($result_commission)) {
     $related_commission_by_id[ $the_commission['id'] ] = $the_commission;
 }
-*/
+
 
 //$var[ many(commission) ] = one(policy)
 //Get relationship of Policy - Commission , get related policy id by commission ID
+/*
 $related_commission_id_by_policy_id = [];
 $query_policy_commission_relationship = "SELECT * FROM `med01_policy_med01_commission_1_c` where deleted = '9' "; //disabled this query - having dupe issue, lets set to == 9
 $relationship_commission_policy = $policy->db->query($query_policy_commission_relationship);
 
 while ($the_relationship_commission_policy = $policy->db->fetchByAssoc($relationship_commission_policy)) {
-    //$related_commission_id_by_policy_id[ $the_relationship_commission_policy['med01_policy_med01_commission_1med01_commission_idb'] ] = $the_relationship_commission_policy['med01_policy_med01_commission_1med01_policy_ida'];
-    if( isset( $commission_count_by_id[ $the_relationship_commission_policy['med01_policy_med01_commission_1med01_policy_ida'] ] ) ){
-        $commission_count_by_id[ $the_relationship_commission_policy['med01_policy_med01_commission_1med01_policy_ida'] ]++;
-    } else {
-        $commission_count_by_id[ $the_relationship_commission_policy['med01_policy_med01_commission_1med01_policy_ida'] ] = 1;
-    }
-}
+
+    $commissions_by_id[ $the_relationship_commission_policy['med01_policy_med01_commission_1med01_policy_ida'] ][] = ;
+   
+}*/
 
 
 $query_policy_commission_relationship2 = "SELECT * FROM `med01_policy_med01_commission_c` where deleted != '1' ";
 $relationship_commission_policy2 = $policy->db->query($query_policy_commission_relationship2);
 
 while ($the_relationship_commission_policy2 = $policy->db->fetchByAssoc($relationship_commission_policy2)) {
-
-    if( isset( $commission_count_by_id[ $the_relationship_commission_policy2['med01_policy_med01_commissionmed01_policy_ida'] ] ) ){
-        $commission_count_by_id[ $the_relationship_commission_policy2['med01_policy_med01_commissionmed01_policy_ida'] ]++;   
-    } else {
-        $commission_count_by_id[ $the_relationship_commission_policy2['med01_policy_med01_commissionmed01_policy_ida'] ] = 1;        
+    if( isset( $related_commission_by_id[ $the_relationship_commission_policy2['med01_policy_med01_commissionmed01_commission_idb'] ] ) ){
+        $commissions_by_id[ $the_relationship_commission_policy2['med01_policy_med01_commissionmed01_policy_ida'] ][] = $related_commission_by_id[ $the_relationship_commission_policy2['med01_policy_med01_commissionmed01_commission_idb'] ];
     }
+    
+
 }
 
 
@@ -119,7 +118,7 @@ while ($the_relationship_commission_policy2 = $policy->db->fetchByAssoc($relatio
 
 // Get all the list, no limit, we only limit the number of to updates
 //$query = "SELECT id FROM {$policy->table_name} WHERE DATE_MODIFIED >= DATE_SUB(NOW(), INTERVAL 1 DAY) OR DATE_ENTERED >= DATE_SUB(NOW(), INTERVAL 1 DAY)";
-$query = "SELECT id, name, commissionpaid FROM {$policy->table_name} ";
+$query = "SELECT id, name, commissionpaid, policynumber FROM {$policy->table_name} where deleted != '1' ";
 $result = $policy->db->query($query);
 
 
@@ -133,13 +132,32 @@ $total_rows_updated = 0;
 
 while ($row = $policy->db->fetchByAssoc($result)) {
 
+
+
+
     if( isset( $related_insured_id_by_policy_id[ $row['id'] ] ) && $related_insured_id_by_policy_id[ $row['id'] ] && isset( $related_insured_by_id[ $related_insured_id_by_policy_id[ $row['id'] ] ] ) && $related_insured_by_id[ $related_insured_id_by_policy_id[ $row['id'] ] ] ){
         $related_insured_data = $related_insured_by_id[ $related_insured_id_by_policy_id[ $row['id'] ] ];
     } else {
         $related_insured_data = false;
     }
 
-    $check_formula = (int)commissionPaid( $row, $related_insured_data, $commission_count_by_id );
+
+
+
+
+
+    
+    if( isset( $commissions_by_id[ $row['id'] ] ) && is_array( $commissions_by_id[ $row['id'] ] ) && count( $commissions_by_id[ $row['id'] ] ) > 0 ){
+        $related_commission = $commissions_by_id[ $row['id'] ];
+    } else {
+        $related_commission = [];
+    }
+
+    $check_formula = (int)commissionPaid( $row, $related_insured_data, $related_commission );
+
+
+
+
 
 
 
