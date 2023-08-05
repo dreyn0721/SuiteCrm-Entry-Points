@@ -9,18 +9,18 @@ function test(){
 }
 
 
-function customerDatePolicyQuarter( $policy_data = false, $insured_data = false ){ //customerdate
+function customerDatePolicyQuarter( $policy_data = false, $insured_data = false ){ //canceldate
     if( $policy_data !== false  ){
         //make conditions here
 
-        if( isset( $policy_data['customerdate'] ) && $policy_data['customerdate'] ){
-            if( date("m", strtotime( $policy_data['customerdate'] ) ) <= 3 ){
+        if( isset( $policy_data['canceldate'] ) && $policy_data['canceldate'] ){
+            if( date("m", strtotime( $policy_data['canceldate'] ) ) <= 3 ){
                 return "1";
-            } else if( date("m", strtotime( $policy_data['customerdate'] ) ) <= 6 ){
+            } else if( date("m", strtotime( $policy_data['canceldate'] ) ) <= 6 ){
                 return "2";
-            } else if( date("m", strtotime( $policy_data['customerdate'] ) ) <= 9 ){
+            } else if( date("m", strtotime( $policy_data['canceldate'] ) ) <= 9 ){
                 return "3";
-            } else if( date("m", strtotime( $policy_data['customerdate'] ) ) <= 12 ){
+            } else if( date("m", strtotime( $policy_data['canceldate'] ) ) <= 12 ){
                 return "4";
             } else {
                 return "0";
@@ -185,146 +185,6 @@ function chargedBack( $policy_data = false, $insured_data = false, $related_comm
         return false;
     }
 }
-
-
-
-
-
-
-function commissions( $policy_data = false, $insured_data = false, $related_commission_by_id = false, $commission_ids_by_policy_id = false ){ //commission
-    if( $policy_data !== false  && $related_commission_by_id !== false && $commission_ids_by_policy_id !== false && isset( $commission_ids_by_policy_id[ $policy_data['id'] ] ) ){
-        //make conditions here
-
-        $related_commissions_ids = $commission_ids_by_policy_id[ $policy_data['id'] ];
-
-        if( isset( $related_commissions_ids ) && is_array( $related_commissions_ids ) && count( $related_commissions_ids ) > 0 ){
-            $commissions = 0;
-
-            foreach( $related_commissions_ids as $related_commissions_id ){
-
-                if( isset( $related_commission_by_id[ $related_commissions_id ] ) && isset( $related_commission_by_id[ $related_commissions_id ]['commission'] ) ){
-
-                    $the_related_commission = $related_commission_by_id[ $related_commissions_id ];
-
-                    $commissions = $commissions+( abs( $the_related_commission['commission'] ) );
-
-                }
-            }
-
-            return (number_format(abs( $commissions ), 2, '.', ''));
-
-        }
-
-        
-
-        return (number_format(0, 2, '.', ''));
-        
-
-
-    } else {
-        return (number_format(0, 2, '.', ''));
-    }
-}
-
-
-
-
-
-
-function chargebacks( $policy_data = false, $insured_data = false, $related_commission_by_id = false, $commission_ids_by_policy_id = false ){ //chargeback
-    if( $policy_data !== false  && $related_commission_by_id !== false && $commission_ids_by_policy_id !== false && isset( $commission_ids_by_policy_id[ $policy_data['id'] ] ) ){
-        //make conditions here
-
-        $related_commissions_ids = $commission_ids_by_policy_id[ $policy_data['id'] ];
-
-        if( isset( $related_commissions_ids ) && is_array( $related_commissions_ids ) && count( $related_commissions_ids ) > 0 ){
-            $chargebacks = 0;
-
-            foreach( $related_commissions_ids as $related_commissions_id ){
-
-                if( isset( $related_commission_by_id[ $related_commissions_id ] ) && isset( $related_commission_by_id[ $related_commissions_id ]['chargeback'] ) ){
-
-                    $the_related_commission = $related_commission_by_id[ $related_commissions_id ];
-
-                    $chargebacks = $chargebacks+( abs( $the_related_commission['chargeback'] ) );
-
-                }
-            }
-
-            return "-".(number_format(abs( $chargebacks ), 2, '.', ''));
-
-        }
-
-        
-
-        return (number_format(0, 2, '.', ''));
-        
-
-
-    } else {
-        return (number_format(0, 2, '.', ''));
-    }
-}
-
-
-
-
-
-
-
-function revenue( $policy_data = false, $insured_data = false, $related_commission_by_id = false, $commission_ids_by_policy_id = false ){ //revenue, chargeback, commission
-
-    if( $policy_data !== false  && $related_commission_by_id !== false && $commission_ids_by_policy_id !== false && isset( $commission_ids_by_policy_id[ $policy_data['id'] ] ) ){
-        //make conditions here
-
-        $related_commissions_ids = $commission_ids_by_policy_id[ $policy_data['id'] ];
-
-        if( isset( $related_commissions_ids ) && is_array( $related_commissions_ids ) && count( $related_commissions_ids ) > 0 ){
-            $chargebacks = 0;
-            $commissions = 0;
-
-            foreach( $related_commissions_ids as $related_commissions_id ){
-
-
-
-                if( isset( $related_commission_by_id[ $related_commissions_id ] ) && isset( $related_commission_by_id[ $related_commissions_id ]['chargeback'] ) ){
-
-                    $the_related_commission = $related_commission_by_id[ $related_commissions_id ];
-
-                    $chargebacks = $chargebacks+( abs( $the_related_commission['chargeback'] ) );
-
-                }
-
-
-
-                if( isset( $related_commission_by_id[ $related_commissions_id ] ) && isset( $related_commission_by_id[ $related_commissions_id ]['commission'] ) ){
-
-                    $the_related_commission = $related_commission_by_id[ $related_commissions_id ];
-
-                    $commissions = $commissions+( abs( $the_related_commission['commission'] ) );
-
-                }
-
-
-            }
-
-            return (number_format(abs( ( ( abs( $commissions ) ) - ( abs( $chargebacks ) ) ) ), 2, '.', ''));
-
-        }
-
-        
-
-        return (number_format(0, 2, '.', ''));
-        
-
-
-    } else {
-        return (number_format(0, 2, '.', ''));
-    }
-    
-}
-
-
 
 function chargeBackCommission( $policy_data = false, $insured_data = false , $related_commission_by_id = false, $commission_ids_by_policy_id = false ){ //carrier
     if( $policy_data !== false  && $related_commission_by_id !== false && $commission_ids_by_policy_id !== false ){
@@ -545,7 +405,7 @@ function pastRD( $policy_data = false, $insured_data = false ){ // effectivedate
     if( $policy_data !== false  ){
         //make conditions here
 
-        if( isset( $policy_data['effectivedate'] ) && $policy_data['effectivedate'] && $policy_data['effectivedate'] !== "0000-00-00" ){
+        if( isset( $policy_data['effectivedate'] ) && $policy_data['effectivedate'] ){
 
             $date1 = new DateTime( $policy_data['effectivedate'] );
             $date2 = new DateTime( date("Y-m-d") );
@@ -568,10 +428,9 @@ function pastRD( $policy_data = false, $insured_data = false ){ // effectivedate
 
 
 function sfdnc( $policy_data = false, $insured_data = false ){ //carrier, effectivedate, status, canceldate, declinedate
-
     if( $policy_data !== false  ){
         //make conditions here
-        $plan_duration = planDuration( $policy_data, $insured_data );
+        $plan_duration = planDuration( $policy_data = false, $insured_data = false );
 
         if( isset( $plan_duration ) && $plan_duration > 90 && isset( $policy_data['carrier'] ) ){
 
@@ -579,7 +438,7 @@ function sfdnc( $policy_data = false, $insured_data = false ){ //carrier, effect
                 "Humana",
                 "Anthem",
                 "AnthemBlueCrossandBlueShield",
-                "AnthemH1732003"
+                "AnthemH1732-003"
             );
 
 
@@ -597,146 +456,26 @@ function sfdnc( $policy_data = false, $insured_data = false ){ //carrier, effect
     }
 }
 
-function paidHRA( $policy_data = false, $insured_data = false, $related_commission_by_id = false, $commission_ids_by_policy_id = false ){ //commission *
+function paidHRA( $policy_data = false, $insured_data = false, $related_commission_by_id = false, $commission_ids_by_policy_id = false ){
     if( $policy_data !== false  && $related_commission_by_id !== false && $commission_ids_by_policy_id !== false ){
         //make conditions here
         if( isset( $related_commissions_ids ) && is_array( $related_commissions_ids ) && count( $related_commissions_ids ) > 0 ){
 
-            $uhcpaidhra = 0;
-            $humanasfpaidhra = 0;
-            $wellcaresfpaidhra = 0;
-            $medicopaidhra = 0;
-            $aetnaadvpaidhra = 0;
-            $aetnasfpaidhra = 0;
-            $gpmpaidhra = 0;
-            $antehmpaidhra = 0;
-            $wellcarepaidhra = 0;
-            $humanapaidhra = 0;
-            $aetnasupppaidhra = 0;
-            $aflacpaidhra = 0;
-            $ameritaspaidhra = 0;
-            $cignapaidhra = 0;
-
-
+            $humana_paid_hra = 0;
+            $aetna_adv_paid_hra = 0;
 
             foreach( $related_commissions_ids as $related_commissions_id ){
 
-                if( isset( $related_commission_by_id[ $related_commissions_id ] ) && isset( $related_commission_by_id[ $related_commissions_id ]['uhcpaidhra'] ) ){
-                    $uhcpaidhra++;
+                if( isset( $related_commission_by_id[ $related_commissions_id ] ) && isset( $related_commission_by_id[ $related_commissions_id ]['plann'] ) && $related_commission_by_id[ $related_commissions_id ]['plann'] == "HRA" ){
+                    $humana_paid_hra++;
                 }
-
-
-
-                if( isset( $related_commission_by_id[ $related_commissions_id ] ) && isset( $related_commission_by_id[ $related_commissions_id ]['humanasfpaidhra'] ) ){
-                    $humanasfpaidhra++;
-                }
-
-
-
-                if( isset( $related_commission_by_id[ $related_commissions_id ] ) && isset( $related_commission_by_id[ $related_commissions_id ]['wellcaresfpaidhra'] ) ){
-                    $wellcaresfpaidhra++;
-                }
-
-
-
-                if( isset( $related_commission_by_id[ $related_commissions_id ] ) && isset( $related_commission_by_id[ $related_commissions_id ]['medicopaidhra'] ) ){
-                    $medicopaidhra++;
-                }
-
-
-
-                if( isset( $related_commission_by_id[ $related_commissions_id ] ) && isset( $related_commission_by_id[ $related_commissions_id ]['aetnaadvpaidhra'] ) ){
-                    $aetnaadvpaidhra++;
-                }
-
-
-
-                if( isset( $related_commission_by_id[ $related_commissions_id ] ) && isset( $related_commission_by_id[ $related_commissions_id ]['aetnasfpaidhra'] ) ){
-                    $aetnasfpaidhra++;
-                }
-
-
-
-                if( isset( $related_commission_by_id[ $related_commissions_id ] ) && isset( $related_commission_by_id[ $related_commissions_id ]['gpmpaidhra'] ) ){
-                    $gpmpaidhra++;
-                }
-
-
-
-                if( isset( $related_commission_by_id[ $related_commissions_id ] ) && isset( $related_commission_by_id[ $related_commissions_id ]['antehmpaidhra'] ) ){
-                    $antehmpaidhra++;
-                }
-
-
-
-                if( isset( $related_commission_by_id[ $related_commissions_id ] ) && isset( $related_commission_by_id[ $related_commissions_id ]['wellcarepaidhra'] ) ){
-                    $wellcarepaidhra++;
-                }
-
-
-
-                if( isset( $related_commission_by_id[ $related_commissions_id ] ) && isset( $related_commission_by_id[ $related_commissions_id ]['humanapaidhra'] ) ){
-                    $humanapaidhra++;
-                }
-
-
-
-                if( isset( $related_commission_by_id[ $related_commissions_id ] ) && isset( $related_commission_by_id[ $related_commissions_id ]['aetnasupppaidhra'] ) ){
-                    $aetnasupppaidhra++;
-                }
-
-
-
-                if( isset( $related_commission_by_id[ $related_commissions_id ] ) && isset( $related_commission_by_id[ $related_commissions_id ]['aflacpaidhra'] ) ){
-                    $aflacpaidhra++;
-                }
-
-
-
-                if( isset( $related_commission_by_id[ $related_commissions_id ] ) && isset( $related_commission_by_id[ $related_commissions_id ]['ameritaspaidhra'] ) ){
-                    $ameritaspaidhra++;
-                }
-
-
-
-                if( isset( $related_commission_by_id[ $related_commissions_id ] ) && isset( $related_commission_by_id[ $related_commissions_id ]['cignapaidhra'] ) ){
-                    $cignapaidhra++;
-                }
-
-
-
-
             }
 
 
             if( 
-                $uhcpaidhra
+                $humana_paid_hra 
                 ||
-                $humanasfpaidhra
-                ||
-                $wellcaresfpaidhra
-                ||
-                $medicopaidhra
-                ||
-                $aetnaadvpaidhra
-                ||
-                $aetnasfpaidhra
-                ||
-                $gpmpaidhra
-                ||
-                $antehmpaidhra
-                ||
-                $wellcarepaidhra
-                ||
-                $humanapaidhra
-                ||
-                $aetnasupppaidhra
-                ||
-                $aflacpaidhra
-                ||
-                $ameritaspaidhra
-                ||
-                $cignapaidhra
+                $aetna_adv_paid_hra
             ){
                 return true;
             }
@@ -788,98 +527,62 @@ function commission( $policy_data = false, $insured_data = false ){ //issuedate,
         $plan_w1anc = 0;// [Plan - W/1 ANC]
         $plan_w2anc = 0;// [Plan - W/2 ANC]
 
-        if( $payrolloverride > 0 ){
-// echo "1";
-// exit();
-            return (number_format(0, 8, '.', ''));
+        if( $payrolloverride ){
+            return 0;
         } else {
-            if( $plan_requiresLifetimeLimitException > 0 && $healthlifetimelimit == "100000" ){
-// echo "2";
-// exit();
+            if( $plan_requiresLifetimeLimitException && $healthlifetimelimit == "100000" ){
                 return (number_format(0, 8, '.', ''));
             } else {
-                if( $housedeal > 0 ){
-// echo "3";
-// exit();
+                if( $housedeal ){
                     return (number_format(0, 8, '.', ''));
                 } else {
-                    if( $isActive > 0 and $plan_59age > 0 ){ //gone Insured - Age>58
-// echo "4";
-// exit();
+                    if( $isActive and $plan_59age > 0 ){ //gone Insured - Age>58
                         return (number_format($plan_59age, 8, '.', ''));
                     } else {
                         if( $termDuration < 90 and $plan_STM90ORLESS > 0 ){
-// echo "5";
-// exit();
                             return (number_format($plan_STM90ORLESS, 8, '.', ''));
                         } else {
-                            if( $isActive > 0 and $plan_plantype == "STM" ){ // gone [Insured - # of Approved ANC] = 0
+                            if( $isActive and $plan_plantype == "STM" ){ // gone [Insured - # of Approved ANC] = 0
                                 if( $plan_woanc == null ){
-// echo "6";
-// exit();
                                     return (number_format($plan_flat, 8, '.', ''));
                                 } else {
-// echo "7";
-// exit();
                                     return (number_format($plan_woanc, 8, '.', ''));
                                 }
                             } else {
-                                if( $isActive > 0 and $plan_plantype == "STM" ){ // gone [Insured - # of Approved ANC] = 1
+                                if( $isActive and $plan_plantype == "STM" ){ // gone [Insured - # of Approved ANC] = 1
                                     if( $plan_w1anc == null ){
-// echo "8";
-// exit();
                                         return (number_format($plan_flat, 8, '.', ''));
                                     } else {
-// echo "9";
-// exit();
                                         return (number_format($plan_w1anc, 8, '.', ''));
                                     }
                                 } else {
-                                    if( $isActive > 0 and $plan_plantype == "Limited Medical" ){ // gone [Insured - # of Approved ANC] = 1
+                                    if( $isActive and $plan_plantype == "Limited Medical" ){ // gone [Insured - # of Approved ANC] = 1
                                         if( $plan_w1anc == null ){
-// echo "10";
-// exit();
                                             return (number_format($plan_flat, 8, '.', ''));
                                         } else {
-// echo "11";
-// exit();
                                             return (number_format($plan_w1anc, 8, '.', ''));
                                         }
                                     } else {
-                                        if( $isActive > 0 and $plan_plantype == "Limited Medical" ){ // gone [Insured - # of Approved ANC] = 2
+                                        if( $isActive and $plan_plantype == "Limited Medical" ){ // gone [Insured - # of Approved ANC] = 2
                                             if( $plan_w2anc == null ){
-// echo "12";
-// exit();
                                                 return (number_format($plan_flat, 8, '.', ''));
                                             } else {
-// echo "13";
-// exit();
                                                 return (number_format($plan_w2anc, 8, '.', ''));
                                             }
                                         } else {
-                                            if( $isActive > 0 and $plan_plantype == "STM" ){ // gone [Insured - # of Approved ANC] = 2
+                                            if( $isActive and $plan_plantype == "STM" ){ // gone [Insured - # of Approved ANC] = 2
                                                 if( $plan_w2anc == null ){
-// echo "14";
-// exit();
                                                     return (number_format($plan_flat, 8, '.', ''));
                                                 } else {
-// echo "15";
-// exit();
                                                     return (number_format($plan_w2anc, 8, '.', ''));
                                                 }
                                             } else {
-                                                if( $isActive > 0 and $plan_plantype != "STM" ){
-// echo "16";
-// exit();
+                                                if( $isActive and $plan_plantype != "STM" ){
                                                     return (number_format($plan_flat, 8, '.', ''));
                                                 } else {
-                                                    if( $isActive > 0 and $plan_plantype != "Limited Medical" ){
-// echo "17";
-// exit();
+                                                    if( $isActive and $plan_plantype != "Limited Medical" ){
                                                         return (number_format($plan_flat, 8, '.', ''));
                                                     } else {
-// echo "18";
-// exit();
                                                         return (number_format(0, 8, '.', ''));
                                                     }
                                                 }
@@ -910,8 +613,6 @@ function payout( $policy_data = false, $insured_data = false ){ //issuedate, ter
 
         $commission = commission( $policy_data , $insured_data );
 
-
-
         if( isset( $policy_data['premium'] ) && $policy_data['premium'] && $commission ){
 
             $premium = $policy_data['premium'];
@@ -935,16 +636,14 @@ function payout( $policy_data = false, $insured_data = false ){ //issuedate, ter
 }
 
 function planDuration( $policy_data = false, $insured_data = false ){ //effectivedate, status, canceldate, declinedate
-
     if( $policy_data !== false  ){
 
-        if( isset( $policy_data['effectivedate'] ) && $policy_data['effectivedate'] && $policy_data['effectivedate'] !== "0000-00-00" ){
-
+        if( isset( $policy_data['effectivedate'] ) && $policy_data['effectivedate'] ){
 
             $sfDate = sfDate( $policy_data, $insured_data );
             $effectivedate = $policy_data['effectivedate'];
 
-            if( isset( $sfDate ) && $sfDate && $sfDate !== "0000-00-00" && isset( $policy_data['effectivedate'] ) && $policy_data['effectivedate'] && $policy_data['effectivedate'] !== "0000-00-00" ){
+            if( isset( $sfDate ) && $sfDate && isset( $policy_data['effectivedate'] ) && $policy_data['effectivedate'] ){
                 $date1 = new DateTime( $policy_data['effectivedate'] );
                 $date2 = new DateTime( $sfDate );
 
@@ -964,12 +663,10 @@ function planDuration( $policy_data = false, $insured_data = false ){ //effectiv
 
 
 function sfDate( $policy_data = false, $insured_data = false ){ //status, canceldate, declinedate
-            
     if( $policy_data !== false  ){
 
-
-        $isCancel = isCancel( $policy_data, $insured_data );
-        $isDecline = isDecline( $policy_data, $insured_data );
+        $isCancel = isCancel( $policy_data = false, $insured_data = false );
+        $isDecline = isDecline( $policy_data = false, $insured_data = false );
 
         if( $isCancel ){
 
@@ -987,10 +684,10 @@ function sfDate( $policy_data = false, $insured_data = false ){ //status, cancel
             }
         } 
 
-        return "0000-00-00";
+        return false;
 
     } else {
-        return "0000-00-00";
+        return false;
     }
 
 }
@@ -1087,6 +784,40 @@ function isCancel( $policy_data = false, $insured_data = false ){ //status
     } else {
         return false;
     }
+}
+
+
+
+
+
+
+
+
+
+
+function revenue( $policy_data = false, $insured_data = false, $related_commission_by_id = false, $commission_ids_by_policy_id = false ){ //issuedate, termdate, payrolloverride, healthlifetimelimit, status, housedeal, plantype
+
+
+    $revenue = 0;
+    $commission = 0;
+    $chargeback = 0;
+
+
+    if( $policy_data !== false  ){
+        //make conditions here
+        $commission = commission( $policy_data, $insured_data );
+        $chargeback = chargedBack( $policy_data, $insured_data, $related_commission_by_id, $commission_ids_by_policy_id );
+
+
+        $revenue = ( abs( $commission ) ) - ( abs( $chargeback ) );
+
+
+        
+
+    }
+
+    return $revenue;
+    
 }
 
 
@@ -1366,9 +1097,9 @@ function planDurationCalc( $policy_data = false, $insured_data = false ){ //stat
                 return abs( $diff->days );
             } else {
                 if( $policy_data['status'] == "DeclinedCarrier"){
-                    return '0';
+                    return 0;
                 } else {
-                    if( $policy_data['status'] == "Cancelled"){
+                    if( $policy_data['status'] == "Withdrawn"){
                        $date1 = new DateTime( $policy_data['canceldate'] );
                         $date2 = new DateTime( $policy_data['effectivedate'] );
 
@@ -1377,7 +1108,7 @@ function planDurationCalc( $policy_data = false, $insured_data = false ){ //stat
                         return abs( $diff->days );
                     } else {
 
-                        if( $policy_data['status'] == "Withdrawn"){
+                        if( $policy_data['status'] == "SuccessfulResubmissionWithdrawn"){
                            $date1 = new DateTime( $policy_data['canceldate'] );
                             $date2 = new DateTime( $policy_data['effectivedate'] );
 
@@ -1385,31 +1116,18 @@ function planDurationCalc( $policy_data = false, $insured_data = false ){ //stat
 
                             return abs( $diff->days );
                         } else {
-
-                            if( $policy_data['status'] == "SuccessfulResubmissionWithdrawn"){
-                               $date1 = new DateTime( $policy_data['canceldate'] );
-                                $date2 = new DateTime( $policy_data['effectivedate'] );
-
-                                $diff = $date1->diff($date2);
-
-                                return abs( $diff->days );
+                            if( $policy_data['status'] == "Incomplete"){
+                                return 0;
                             } else {
-                                if( $policy_data['status'] == "Incomplete"){
-                                    return '0';
-                                } else {
-                                    
-                                    if( $policy_data['status'] == "NotIssuedWithdrawn"){
-                                        return '0';
-                                    } else {
-                                        return '0';
-                                    }
-                                }
                                 
+                                if( $policy_data['status'] == "NotIssuedWithdrawn"){
+                                    return 0;
+                                } else {
+                                    return 0;
+                                }
                             }
-
+                            
                         }
-
-                        
                         
                     }
                 }
@@ -1417,11 +1135,11 @@ function planDurationCalc( $policy_data = false, $insured_data = false ){ //stat
         }
 
 
-        return '0';
+        return 0;
 
 
     } else {
-        return '0';
+        return 0;
     }
     
 }
@@ -1502,81 +1220,81 @@ function agentFirstName( $policy_data = false, $insured_data = false ){ //salesr
 
             switch ( $policy_data['salesrep'] ) {
 
-                case 'coalbertomoreno':
+                case 'co_albertomoreno':
                     $agent_name = "Alberto";
                     break;
 
-                case 'cocaitlinmchale':
+                case 'co_caitlinmchale':
                     $agent_name = "Caitlin";
                     break;
 
 
-                case 'cokimberlykinkead':
+                case 'co_kimberlykinkead':
                     $agent_name = "Kimberly";
                     break;
 
 
-                case 'coracheallanneaux':
+                case 'co_racheallanneaux':
                     $agent_name = "Racheal";
                     break;
 
 
-                case 'cosydneeallen':
+                case 'co_sydneeallen':
                     $agent_name = "Sydnee";
                     break;
 
 
-                case 'cowarrenwilson':
+                case 'co_warrenwilson':
                     $agent_name = "Warren";
                     break;
 
 
-                case 'copatriciamcgriff':
+                case 'co_patriciamcgriff':
                     $agent_name = "Patricia";
                     break;
 
 
-                case 'coeverettelemont':
+                case 'co_everettelemont':
                     $agent_name = "Everette";
                     break;
 
 
-                case 'coroseaugustin':
+                case 'co_roseaugustin':
                     $agent_name = "Rose";
                     break;
 
 
-                case 'coessencejones':
+                case 'co_essencejones':
                     $agent_name = "Essence";
                     break;
 
 
-                case 'cojessbaldonado':
+                case 'co_jessbaldonado':
                     $agent_name = "Jessica";
                     break;
 
 
-                case 'cocarmenjoseph':
+                case 'co_carmenjoseph':
                     $agent_name = "Carmen";
                     break;
 
 
-                case 'cocarleitowynter':
+                case 'co_carleitowynter':
                     $agent_name = "Carleito";
                     break;
 
 
-                case 'cokelvinmajano':
+                case 'co_kelvinmajano':
                     $agent_name = "Kelvin";
                     break;
 
 
-                case 'cochrisramos':
+                case 'co_chrisramos':
                     $agent_name = "Chris";
                     break;
 
 
-                case 'cocourtneyscrivens':
+                case 'co_courtneyscrivens':
                     $agent_name = "Courtney";
                     break;
                 
@@ -1660,8 +1378,7 @@ function planDurationRange( $policy_data = false, $insured_data = false ){ //sta
             $planDurationCalc = planDurationCalc( $policy_data, $insured_data );
 
 
-            if( isset( $planDurationCalc ) ){
-                $planDurationCalc = abs( $planDurationCalc );
+            if( isset( $planDurationCalc ) && $planDurationCalc ){
 
                 if( $planDurationCalc <= 0 ){
                     return "A. Less than 1 Day";
@@ -1733,8 +1450,7 @@ function durationRange( $policy_data = false, $insured_data = false ){ //status,
             $planDurationCalc = planDurationCalc( $policy_data, $insured_data );
 
 
-            if( isset( $planDurationCalc ) ){
-                $planDurationCalc = abs( $planDurationCalc );
+            if( isset( $planDurationCalc ) && $planDurationCalc ){
 
                 if( $planDurationCalc <= 0 ){
                     return "A. Less than 1 Day";
@@ -2119,7 +1835,7 @@ function lun( $policy_data = false, $insured_data = false ){ // partdinthisplany
         if( isset( $policy_data['partdinthisplanyear'] ) && $policy_data['partdinthisplanyear'] || isset( $policy_data['partdendoflastplanyear'] ) && $policy_data['partdendoflastplanyear'] ){
             return "Unlike";
         } else {
-            if( isset( $policy_data['nopreviousmedicareadvorpartdpl'] ) && $policy_data['nopreviousmedicareadvorpartdpl'] || isset( $policy_data['Part D Plan'] ) && $policy_data['Part D Plan'] ){
+            if( isset( $policy_data['No Previous Medicare Adv'] ) && $policy_data['No Previous Medicare Adv'] || isset( $policy_data['Part D Plan'] ) && $policy_data['Part D Plan'] ){
                 return "New";
             } else {
                 return "Like";

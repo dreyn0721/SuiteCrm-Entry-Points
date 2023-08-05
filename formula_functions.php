@@ -1352,47 +1352,70 @@ function annualizedPremium( $policy_data = false, $insured_data = false ){ //pre
 
 
 function planDurationCalc( $policy_data = false, $insured_data = false ){ //status, effectivedate, canceldate
+
+
     if( $policy_data !== false  ){
         //make conditions here
 
-        if( isset( $policy_data['status'] ) && $policy_data['status'] && isset( $policy_data['effectivedate'] ) && $policy_data['effectivedate'] && isset( $policy_data['canceldate'] ) && $policy_data['canceldate'] ){
+
+        if( isset( $policy_data['status'] ) && $policy_data['status'] ){
 
             if( $policy_data['status'] == "Issued"){
                 $date1 = new DateTime( date("Y-m-d") );
                 $date2 = new DateTime( $policy_data['effectivedate'] );
 
+
                 $diff = $date1->diff($date2);
 
-                return abs( $diff->days );
+                return $diff->days;
             } else {
                 if( $policy_data['status'] == "DeclinedCarrier"){
                     return '0';
                 } else {
                     if( $policy_data['status'] == "Cancelled"){
-                       $date1 = new DateTime( $policy_data['canceldate'] );
-                        $date2 = new DateTime( $policy_data['effectivedate'] );
 
-                        $diff = $date1->diff($date2);
+                        if( isset( $policy_data['canceldate'] ) && $policy_data['canceldate'] && isset( $policy_data['effectivedate'] ) && $policy_data['effectivedate'] ){
 
-                        return abs( $diff->days );
-                    } else {
-
-                        if( $policy_data['status'] == "Withdrawn"){
-                           $date1 = new DateTime( $policy_data['canceldate'] );
+                            $date1 = new DateTime( $policy_data['canceldate'] );
                             $date2 = new DateTime( $policy_data['effectivedate'] );
 
                             $diff = $date1->diff($date2);
 
                             return abs( $diff->days );
                         } else {
+                            return '0';
+                        }
 
-                            if( $policy_data['status'] == "SuccessfulResubmissionWithdrawn"){
-                               $date1 = new DateTime( $policy_data['canceldate'] );
+                    } else {
+
+                        if( $policy_data['status'] == "Withdrawn"){
+
+                            if( isset( $policy_data['canceldate'] ) && $policy_data['canceldate'] && isset( $policy_data['effectivedate'] ) && $policy_data['effectivedate'] ){
+
+                                $date1 = new DateTime( $policy_data['canceldate'] );
                                 $date2 = new DateTime( $policy_data['effectivedate'] );
 
                                 $diff = $date1->diff($date2);
 
                                 return abs( $diff->days );
+                            } else {
+                                return '0';
+                            }
+                        } else {
+
+                            if( $policy_data['status'] == "SuccessfulResubmissionWithdrawn"){
+
+
+                                if( isset( $policy_data['canceldate'] ) && $policy_data['canceldate'] && isset( $policy_data['effectivedate'] ) && $policy_data['effectivedate'] ){
+                                    $date1 = new DateTime( $policy_data['canceldate'] );
+                                    $date2 = new DateTime( $policy_data['effectivedate'] );
+
+                                    $diff = $date1->diff($date2);
+
+                                    return abs( $diff->days );
+                                } else {
+                                    return '0';
+                                }
                             } else {
                                 if( $policy_data['status'] == "Incomplete"){
                                     return '0';
@@ -1728,7 +1751,8 @@ function planDurationRange( $policy_data = false, $insured_data = false ){ //sta
 function durationRange( $policy_data = false, $insured_data = false ){ //status, effectivedate, canceldate
     if( $policy_data !== false  ){
         //make conditions here
-        if( isset( $policy_data['status'] ) && $policy_data['status'] && isset( $policy_data['effectivedate'] ) && $policy_data['effectivedate'] && isset( $policy_data['canceldate'] ) && $policy_data['canceldate'] ){
+
+        if( isset( $policy_data['status'] ) && $policy_data['status'] ){
 
             $planDurationCalc = planDurationCalc( $policy_data, $insured_data );
 
@@ -3269,8 +3293,27 @@ function sample_string( $policy_data = false, $insured_data = false ){
 }
 
 
+function format_phonenumber ($data)
+{
+    if(  preg_match( '/^\+\d(\d{3})(\d{3})(\d{4})$/', $data,  $matches ) )
+{
+    $result = $matches[1] . '-' .$matches[2] . '-' . $matches[3];
+    return $result;
+}
+elseif (preg_match( '/^(\d{3})(\d{3})(\d{4})$/', $data,  $matches ) ) {
+ $result = $matches[1] . '-' .$matches[2] . '-' . $matches[3];
+ $result1 = "(".$matches[1].")" . ' ' .$matches[2] . '-' . $matches[3];
+    $result2 = "('$data','$result','$result1')";
+    return $result2;
+   
+}
 
+else {
+     $result1 = "('$data')";
+    return $result1;
+}
 
+}
 
 
 
