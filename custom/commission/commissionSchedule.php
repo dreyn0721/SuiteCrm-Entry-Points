@@ -48,7 +48,7 @@ $remaining = 0;
 while ($row = $commission->db->fetchByAssoc($result)) {
 
     $formula = '';
-    if( isset( $row['chargeback'] ) && $row['chargeback'] !== 0 && !is_null( $row['chargeback'] ) ){
+    if( isset( $row['chargeback'] ) && abs( $row['chargeback'] ) > 0 && !is_null( $row['chargeback'] ) ){
         $formula = 'Chargeback';
     } else {
         if( isset( $row['first'] ) && ( $row['first'] == "true" || $row['first'] == true || $row['first'] == "1" || $row['first'] == 1 ) ){
